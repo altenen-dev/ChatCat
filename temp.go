@@ -24,6 +24,7 @@ var (
 	clients = make(map[net.Conn]Client)
 	msgs    = make(chan Message) // Initialize the channel
 	mutex   sync.Mutex
+	history []string
 )
 
 func main() {
@@ -59,14 +60,19 @@ func main() {
 			continue
 		}
 
+		for _, v := range history {
+			conn.Write([]byte(fmt.Sprintln(v)))
+		}
+
 		clientName = strings.TrimSpace(clientName)
 		client := Client{Name: clientName, Connection: conn}
 
 		mutex.Lock()
 		clients[conn] = client
 		mutex.Unlock()
-		msg := Message{Content: clientName + " has joined", sender: conn}
+		msg := Message{Content: clientName + " has joined\n", sender: conn}
 		msgs <- msg
+		history = append(history, msg.Content)
 
 		go handleClient(client)
 	}
@@ -77,8 +83,9 @@ func handleClient(client Client) {
 		mutex.Lock()
 		delete(clients, client.Connection)
 		mutex.Unlock()
-		msg := Message{Content: client.Name + " has left", sender: client.Connection}
+		msg := Message{Content: client.Name + " has left\n", sender: client.Connection}
 		msgs <- msg
+		history = append(history, msg.Content)
 		client.Connection.Close()
 	}()
 	name := strings.TrimSpace(client.Name)
@@ -100,6 +107,8 @@ func handleClient(client Client) {
 
 		msg := Message{Content: cMsg, sender: client.Connection}
 		msgs <- msg
+		history = append(history, msg.Content)
+
 	}
 }
 
@@ -107,8 +116,11 @@ func broadcastMessages() {
 	for msg := range msgs {
 		mutex.Lock()
 		for _, client := range clients {
-			if strings.Contains(msg.Content, "left") || strings.Contains(msg.Content, "joined") {
-				client.Connection.Write([]byte("\n"))
+			if msg.sender != client.Connection && (strings.Contains(msg.Content, "left") || strings.Contains(msg.Content, "join")) {
+				timeStamp := time.Now().Format("2006-01-02 15:04:05")
+				template := fmt.Sprintf("[%s][%s]: ", timeStamp, client.Name)
+				client.Connection.Write([]byte(fmt.Sprintln(msg.Content)))
+				client.Connection.Write([]byte(template))
 			}
 			if msg.sender != client.Connection {
 				client.Connection.Write([]byte(fmt.Sprintln(msg.Content)))
