@@ -27,7 +27,7 @@ func NewClientsHandler(conn net.Conn) (Client, error) {
 	Mutex.Lock()
 	Clients[conn] = client
 	Mutex.Unlock()
-	msg := Message{Content: clientName + " has joined\n", sender: conn}
+	msg := Message{Content: clientName + " has joined", sender: conn}
 	Msgs <- msg
 	History = append(History, msg.Content)
 	return client, nil

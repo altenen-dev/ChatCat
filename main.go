@@ -1,26 +1,41 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"net"
 	handle "net-cat/handlers"
+	"os"
+	"os/signal"
+	"syscall"
 )
-//TO DO:
-// -Fix the new line issue while writing msgs.
-// -Argumnets for port
-// -Penguin Asscii when askin for the name
-func main() {
-	port := "8989" // Default port
 
-	dataStream, err := net.Listen("tcp", "localhost:"+port)
+const defaultPort = "8989"
+
+func main() {
+	port := flag.String("port", defaultPort, "Port to run the TCP server on")
+	flag.Parse()
+
+	dataStream, err := net.Listen("tcp", "localhost:"+*port)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("TCP server is running on:", port)
+	fmt.Println("TCP server is running on port:", *port)
 	defer dataStream.Close()
 
+	// Handle graceful shutdown
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-c
+		fmt.Println("\nShutting down server...")
+		dataStream.Close()
+		os.Exit(0)
+	}()
+
 	go handle.BroadcastMessages() // Start a goroutine to broadcast messages
+
 	for {
 		conn, err := dataStream.Accept()
 		if err != nil {
@@ -34,13 +49,14 @@ func main() {
 			continue
 		}
 
-		client, err := handle.NewClientsHandler(conn)
-		if err != nil {
-			log.Println("Error reading client name:", err)
-			conn.Close()
-			continue
-		}
-
-		go handle.HandleClient(client)
+		go func(conn net.Conn) {
+			client, err := handle.NewClientsHandler(conn)
+			if err != nil {
+				log.Println("Error reading client name:", err)
+				conn.Close()
+				return
+			}
+			handle.HandleClient(client)
+		}(conn)
 	}
 }

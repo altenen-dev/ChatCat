@@ -7,12 +7,12 @@ import (
 
 func FormatMessage(c Client, m string) string {
 	timeStamp := time.Now().Format("2006-01-02 15:04:05")
-	msg := fmt.Sprintf("[%s][%s]: %s", timeStamp, c.Name, m)
+	msg := fmt.Sprintf("[%s][%s]msg: %s", timeStamp, c.Name, m)
 	return msg
 }
 
 func FormatPrompt(c Client) string {
 	timeStamp := time.Now().Format("2006-01-02 15:04:05")
-	msg := fmt.Sprintf("[%s][%s]: ", timeStamp, c.Name)
+	msg := fmt.Sprintf("[%s][%s]pro: ", timeStamp, c.Name)
 	return msg
 }

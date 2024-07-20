@@ -11,14 +11,14 @@ func HandleClient(client Client) {
 		Mutex.Lock()
 		delete(Clients, client.Connection)
 		Mutex.Unlock()
-		msg := Message{Content: client.Name + " has left\n", sender: client.Connection}
+		msg := Message{Content: client.Name + " has left", sender: client.Connection}
 		Msgs <- msg
 		History = append(History, msg.Content)
 		client.Connection.Close()
 	}()
-	promptMsg := FormatPrompt(client)
+	//promptMsg := FormatPrompt(client)
 	for {
-		client.Connection.Write([]byte(promptMsg))
+		//client.Connection.Write([]byte(promptMsg))
 		message, err := bufio.NewReader(client.Connection).ReadString('\n')
 		if err != nil {
 			fmt.Println("Error reading the input:", err)
