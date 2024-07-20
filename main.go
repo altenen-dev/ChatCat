@@ -6,7 +6,10 @@ import (
 	"net"
 	handle "net-cat/handlers"
 )
-
+//TO DO:
+// -Fix the new line issue while writing msgs.
+// -Argumnets for port
+// -Penguin Asscii when askin for the name
 func main() {
 	port := "8989" // Default port
 
