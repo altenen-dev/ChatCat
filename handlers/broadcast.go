@@ -6,9 +6,9 @@ import (
 )
 
 func BroadcastMessages() {
-	for msg := range msgs {
-		mutex.Lock()
-		for _, client := range clients {
+	for msg := range Msgs {
+		Mutex.Lock()
+		for _, client := range Clients {
 			if msg.sender != client.Connection && (strings.Contains(msg.Content, "left") || strings.Contains(msg.Content, "join")) {
 				prompt := FormatPrompt(client)
 				client.Connection.Write([]byte("\n"))
@@ -20,6 +20,6 @@ func BroadcastMessages() {
 				client.Connection.Write([]byte(fmt.Sprintln(msg.Content)))
 			}
 		}
-		mutex.Unlock()
+		Mutex.Unlock()
 	}
 }

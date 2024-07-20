@@ -15,20 +15,20 @@ func NewClientsHandler(conn net.Conn) (Client, error) {
 		return Client{}, err
 	}
 
-	mutex.Lock()
-	for _, v := range history {
+	Mutex.Lock()
+	for _, v := range History {
 		conn.Write([]byte(fmt.Sprintln(v)))
 	}
-	mutex.Unlock()
+	Mutex.Unlock()
 
 	clientName = strings.TrimSpace(clientName)
 	client := Client{Name: clientName, Connection: conn}
 
-	mutex.Lock()
-	clients[conn] = client
-	mutex.Unlock()
+	Mutex.Lock()
+	Clients[conn] = client
+	Mutex.Unlock()
 	msg := Message{Content: clientName + " has joined\n", sender: conn}
-	msgs <- msg
-	history = append(history, msg.Content)
+	Msgs <- msg
+	History = append(History, msg.Content)
 	return client, nil
 }

@@ -8,12 +8,12 @@ import (
 
 func HandleClient(client Client) {
 	defer func() {
-		mutex.Lock()
-		delete(clients, client.Connection)
-		mutex.Unlock()
+		Mutex.Lock()
+		delete(Clients, client.Connection)
+		Mutex.Unlock()
 		msg := Message{Content: client.Name + " has left\n", sender: client.Connection}
-		msgs <- msg
-		history = append(history, msg.Content)
+		Msgs <- msg
+		History = append(History, msg.Content)
 		client.Connection.Close()
 	}()
 	promptMsg := FormatPrompt(client)
@@ -30,8 +30,8 @@ func HandleClient(client Client) {
 		}
 		fMsg := FormatMessage(client, message)
 		msg := Message{Content: fMsg, sender: client.Connection}
-		msgs <- msg
-		history = append(history, msg.Content)
+		Msgs <- msg
+		History = append(History, msg.Content)
 
 	}
 }

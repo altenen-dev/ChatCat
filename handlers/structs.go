@@ -16,8 +16,8 @@ type Message struct {
 }
 
 var (
-	clients = make(map[net.Conn]Client)
-	msgs    = make(chan Message) // Initialize the channel
-	mutex   sync.Mutex
-	history []string
+	Clients = make(map[net.Conn]Client)
+	Msgs    = make(chan Message) // Initialize the channel
+	Mutex   sync.Mutex
+	History []string
 )
