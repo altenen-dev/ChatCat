@@ -4,10 +4,18 @@ import (
 	"bufio"
 	"fmt"
 	"net"
-	"strings"
+	"os"
 )
 
+// This handler welcomes the new clients and push the old messages to him.
 func NewClientsHandler(conn net.Conn) (Client, error) {
+	//Print asciiart
+	asciiart, err := os.ReadFile("welcome.txt")
+	if err != nil {
+		fmt.Println("Error printing asciiArt: ", err)
+	}
+	conn.Write(asciiart)
+	//prompt username
 	conn.Write([]byte("[ENTER YOUR NAME]: "))
 	reader := bufio.NewReader(conn)
 	clientName, err := reader.ReadString('\n')
@@ -16,15 +24,15 @@ func NewClientsHandler(conn net.Conn) (Client, error) {
 	}
 
 	Mutex.Lock()
+	//push msg history
 	for _, v := range History {
 		conn.Write([]byte(fmt.Sprintln(v)))
 	}
 	Mutex.Unlock()
-
-	clientName = strings.TrimSpace(clientName)
+	//create the client
 	client := Client{Name: clientName, Connection: conn}
-
 	Mutex.Lock()
+	//add the client to the map
 	Clients[conn] = client
 	Mutex.Unlock()
 	msg := Message{Content: clientName + " has joined", sender: conn}
