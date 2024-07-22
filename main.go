@@ -13,7 +13,8 @@ const defaultPort = "8989"
 func main() {
 	port := defaultPort
 	if len(os.Args) > 2 {
-		log.Fatal("[USAGE]: ./TCPChat $port")
+		fmt.Println("[USAGE]: ./TCPChat $port")
+		return
 	}
 	if len(os.Args) == 2 {
 		port = os.Args[1]

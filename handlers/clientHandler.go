@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"bufio"
+	"strings"
 )
 
 // This handler reads the messages from the client to send it to the channel, and adds it to the history
@@ -13,9 +14,11 @@ func HandleClient(client Client) {
 		Mutex.Lock()
 		delete(Clients, client.Connection)
 		Mutex.Unlock()
-		msg := Message{Content: client.Name + " has left", sender: client.Connection}
+		msg := Message{Content: string(Red) + client.Name + " has left" + ResetColor, sender: client.Connection}
 		Msgs <- msg
+		Mutex.Lock()
 		History = append(History, msg.Content)
+		Mutex.Unlock()
 		client.Connection.Close()
 	}()
 	for {
@@ -24,6 +27,7 @@ func HandleClient(client Client) {
 		if err != nil {
 			return
 		}
+		message = strings.ReplaceAll(message, "\n", "")
 		// skipping the empty messages
 		if message == "" {
 			client.Connection.Write([]byte(FormatPrompt(client)))
@@ -32,7 +36,9 @@ func HandleClient(client Client) {
 		fMsg := FormatMessage(client, message)
 		msg := Message{Content: fMsg, sender: client.Connection}
 		Msgs <- msg
+		Mutex.Lock()
 		History = append(History, msg.Content)
+		Mutex.Unlock()
 
 	}
 }

@@ -20,4 +20,9 @@ var (
 	Msgs    = make(chan Message) // Initialize the channel
 	Mutex   sync.Mutex
 	History []string
+	Red     = "\033[31m"
+	Green   = "\033[32m"
+	Blue    = "\033[34m"
+	Yellow  = "\033[33m"
+	ResetColor = "\033[0m"
 )
