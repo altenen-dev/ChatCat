@@ -16,11 +16,15 @@ func main() {
 		fmt.Println("[USAGE]: ./TCPChat $port")
 		return
 	}
+	var localhostIP string
 	if len(os.Args) == 2 {
 		port = os.Args[1]
+		localhostIP := net.IPv4(127, 0, 0, 1).String()
+		fmt.Println("Localhost IP address:", localhostIP)
 	}
+
 	//Starting tcp connection on $port
-	listener, err := net.Listen("tcp", "localhost:"+port)
+	listener, err := net.Listen("tcp", localhostIP+":"+port)
 	if err != nil {
 		log.Fatal(err)
 	}
