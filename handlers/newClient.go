@@ -8,6 +8,16 @@ import (
 	"strings"
 )
 
+func promptUserName(conn net.Conn) (string, error) {
+	reader := bufio.NewReader(conn)
+	clientName, err := reader.ReadString('\n')
+	if err != nil {
+		return "", err
+	}
+	return strings.ReplaceAll(clientName, "\n", ""), err
+
+}
+
 // This handler welcomes the new clients and push the old messages to him.
 func NewClientsHandler(conn net.Conn) (Client, error) {
 	//Print asciiart
@@ -19,14 +29,28 @@ func NewClientsHandler(conn net.Conn) (Client, error) {
 	conn.Write([]byte(coloredAscii))
 	//prompt username
 	conn.Write([]byte("[ENTER YOUR NAME]: "))
-	reader := bufio.NewReader(conn)
-	clientName, err := reader.ReadString('\n')
+	clientName, err := promptUserName(conn) //promt username
 	if err != nil {
 		return Client{}, err
 	}
+	if clientName == "" {
+		conn.Write([]byte("Empty name is not allowed!\n"))
+		conn.Write([]byte("[ENTER YOUR NAME]: "))
+		clientName, err = promptUserName(conn) //promt username
+		if err != nil {
+			return Client{}, err
+		}
+	}
 
-	clientName = strings.ReplaceAll(clientName, "\n", "")
-
+	if isClientExist(clientName) {
+		conn.Write([]byte("There is a user with this name, please use another name.\n"))
+		conn.Write([]byte("[ENTER YOUR NAME]: "))
+		conn.Write([]byte("[ENTER YOUR NAME]: "))
+		clientName, err = promptUserName(conn) //promt username
+		if err != nil {
+			return Client{}, err
+		}
+	}
 	Mutex.Lock()
 	//push msg history
 	for _, v := range History {
