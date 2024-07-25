@@ -33,7 +33,7 @@ This project work similar to how the original NetCat works, i.e. it creates a gr
 ```
 ./TCPChat $port
 ```
-or  (using default port)
+or  using default port
 ```
 ./TCPChat
 ```
