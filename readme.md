@@ -21,7 +21,7 @@ This project work similar to how the original NetCat works, i.e. it creates a gr
 - If there is no port specified, then set as default the port 8989. Otherwise, program must respond with usage message: `[USAGE]: ./TCPChat $port`
 ## Usage
 ```
-- https://learn.reboot01.com/git/tnji/net-cat.git 
+- https://learn.reboot01.com/git/aliabbas0/net-cat.git 
 
 - cd net-cat/
 
