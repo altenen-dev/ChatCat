@@ -31,7 +31,11 @@ This project work similar to how the original NetCat works, i.e. it creates a gr
 ### How to go run
 
 ```
-./TCPChat $port or ./TCPChat (using default port)
+./TCPChat $port
+```
+or  (using default port)
+```
+./TCPChat
 ```
 ### Example
 
