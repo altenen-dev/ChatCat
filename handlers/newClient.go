@@ -45,7 +45,6 @@ func NewClientsHandler(conn net.Conn) (Client, error) {
 	if isClientExist(clientName) {
 		conn.Write([]byte("There is a user with this name, please use another name.\n"))
 		conn.Write([]byte("[ENTER YOUR NAME]: "))
-		conn.Write([]byte("[ENTER YOUR NAME]: "))
 		clientName, err = promptUserName(conn) //promt username
 		if err != nil {
 			return Client{}, err
