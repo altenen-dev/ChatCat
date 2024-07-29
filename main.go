@@ -39,6 +39,7 @@ func main() {
 		conn, err := listener.Accept()
 		if err != nil {
 			log.Println("Error accepting connection:", err)
+			conn.Close()
 			continue
 		}
 

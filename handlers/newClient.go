@@ -14,7 +14,7 @@ func promptUserName(conn net.Conn) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return strings.ReplaceAll(clientName, "\n", ""), err
+	return strings.TrimSpace(strings.ReplaceAll(clientName, "\n", "")), err
 
 }
 
@@ -28,22 +28,14 @@ func NewClientsHandler(conn net.Conn) (Client, error) {
 	coloredAscii := Blue + string(asciiart) + ResetColor
 	conn.Write([]byte(coloredAscii))
 	//prompt username
+	clientName := ""
 	conn.Write([]byte("[ENTER YOUR NAME]: "))
-	clientName, err := promptUserName(conn) //promt username
+	clientName, err = promptUserName(conn) //promt username
 	if err != nil {
 		return Client{}, err
 	}
-	if clientName == "" {
-		conn.Write([]byte("Empty name is not allowed!\n"))
-		conn.Write([]byte("[ENTER YOUR NAME]: "))
-		clientName, err = promptUserName(conn) //promt username
-		if err != nil {
-			return Client{}, err
-		}
-	}
-
-	if isClientExist(clientName) {
-		conn.Write([]byte("There is a user with this name, please use another name.\n"))
+	for clientName == "" || isClientExist(clientName) {
+		conn.Write([]byte("The name either empty or taken, please enter it again:\n"))
 		conn.Write([]byte("[ENTER YOUR NAME]: "))
 		clientName, err = promptUserName(conn) //promt username
 		if err != nil {

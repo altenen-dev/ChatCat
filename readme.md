@@ -25,7 +25,7 @@ This project work similar to how the original NetCat works, i.e. it creates a gr
 
 - cd net-cat/
 
-- go build -o TCPChat cmd/main.go 
+- go build -o TCPChat main.go 
 ```
 
 ### How to go run

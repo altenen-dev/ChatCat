@@ -11,11 +11,15 @@ func BroadcastMessages() {
 		for _, client := range Clients {
 			prompt := FormatPrompt(client)
 			if msg.sender != client.Connection {
-				client.Connection.Write([]byte("\n"))
-				client.Connection.Write([]byte(fmt.Sprintln(msg.Content)))
-				client.Connection.Write([]byte(prompt))
+				_, err := client.Connection.Write([]byte("\n" + fmt.Sprintln(msg.Content) + prompt))
+				if err != nil {
+					fmt.Println("Error writing the message:", err)
+				}
 			} else {
-				client.Connection.Write([]byte(prompt))
+				_, err := client.Connection.Write([]byte(prompt))
+				if err != nil {
+					fmt.Println("Error writing the message:", err)
+				}
 			}
 		}
 		Mutex.Unlock()

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"bufio"
+	"fmt"
 	"strings"
 )
 
@@ -24,13 +25,15 @@ func HandleClient(client Client) {
 	for {
 		//Read the msg form the user
 		message, err := bufio.NewReader(client.Connection).ReadString('\n')
-		if err != nil {
+		if err != nil && strings.Contains(err.Error(), "EOF") {
+			fmt.Println("Error reading message from client: client disconnected")
+			client.Connection.Close()
 			return
 		}
 		message = strings.ReplaceAll(message, "\n", "")
 		// skipping the empty messages
 		if message == "" {
-			client.Connection.Write([]byte(FormatPrompt(client)))
+			//client.Connection.Write([]byte(FormatPrompt(client)))
 			continue
 		}
 		fMsg := FormatMessage(client, message)
